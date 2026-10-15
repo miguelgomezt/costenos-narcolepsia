@@ -5,6 +5,12 @@ import (
 	"strings"
 )
 
+/**Person guarda los datos de identidad que comparten paciente y médicos.
+Se embede (composición) en Patient, Doctor y Orderly, asi que esos tipos
+no repiten los campos ni los metodos. 
+**/
+
+
 
 type Person struct {
 	id   string
@@ -12,6 +18,12 @@ type Person struct {
 	age  int
 }
 
+
+/**
+newPerson valida los datos y contruye una persona. Es privada(Minuscula)
+porque solo la usan los contructores de Patient, Doctor y Orderly, que estan
+en un mismo paquete. Asi la validación esta en un solo lugar. 
+**/
 func newPerson(id, name string, age int) (Person, error) {
 	if strings.TrimSpace(id) == "" {
 	return Person{}, errors.New("person : id cannot be empty")
