@@ -12,17 +12,17 @@ Es un tipo propio con constante (no strings sueltos sueltos) para que el compila
 atrape los errores de escritura
 **/
 
-type NarcolepsyaLevel int 
+type NarcolepsyLevel int 
 
 const (
-	Mild NarcolepsyaLevel = iota
+	Mild NarcolepsyLevel = iota
 	Moderate
 	Severe
 )
 
 //String permite imrpimir el nivel de forma.
-func (l NarcolepsyaLevel) String() string{
-	switch 1 {
+func (l NarcolepsyLevel) String() string{
+	switch l {
 	case Mild:
 		return "Mild"
 	case Moderate:
@@ -61,7 +61,7 @@ Patient es una persona con narcolepsia atendida por el hospital.
 
 type Patient struct{
 	Person
-	level NarcolepsyaLevel
+	level NarcolepsyLevel
 	state PatientState
 	currentLocation string
 	assignedDoctor *Doctor
@@ -70,7 +70,7 @@ type Patient struct{
 
 //NewPatient valida los datos y crea un paciente despierto y sin sala.
 
-func NewPatient(id, name string, age int, level NarcolepsyaLevel)(*Patient, error){
+func NewPatient(id, name string, age int, level NarcolepsyLevel)(*Patient, error){
 person, err := newPerson(id, name, age)
 if err != nil{
 	return nil, err
@@ -86,21 +86,21 @@ return &Patient{
 	}, nil
 }
 
-/**
+/*
 SufferSleepAttack deja al paciente dormido en el pasillo, en la ubicación dada.
 Si el paciente ya estaba dormido no hace nada: así un paciente ya esta en una 
 cama no vuelve al pasillo por error. 
-**/
+*/
 
-func(p*Patient) SufferSleepAttack(location string){
+func (p*Patient) SufferSleepAttack(location string){
 	if p.state != Awake {
 		return
 	}
-	if strings.TrimSpace(location) == "" {
-		location = "Unknown location"
+	if strings.TrimSpace(location) == ""{
+		location = "unknown location"
 	}
 	p.state = AsleepInHallway
-	p.currentLocation = location|
+	p.currentLocation = location
 }
 
 /**
@@ -122,7 +122,7 @@ func (p*Patient) WakeUp() error{
 func(p*Patient) State() PatientState {return p.state}
 
 //Level devuelve el nivel de Narcolepsia.
-func(p*Patient) Level() NarcolepsyaLevel {return p.level}
+func(p*Patient) Level() NarcolepsyLevel {return p.level}
 
 //Location devuelve el lugar donde esta o donde se durmio el paciente.
 func (p*Patient) Location() string {return p.currentLocation}
@@ -131,7 +131,7 @@ func (p*Patient) Location() string {return p.currentLocation}
 func (p*Patient) Room() *Room {return p.room}
 
 //AssignedDoctor devuelve el doctor a cargo, o nil si no se tiene doctor. 
-func (p*Patient) Doctor() *Doctor {return p.assignedDoctor}
+func (p*Patient) AssignedDoctor() *Doctor {return p.assignedDoctor}
 
 
 /**
