@@ -134,4 +134,21 @@ func (p*Patient) Room() *Room {return p.room}
 func (p*Patient) Doctor() *Doctor {return p.assignedDoctor}
 
 
+/**
+placeInBed (privado) acuesta al paciente en la sala. Solo lo usa el hospital.
+**/
+func (p*Patient) placeInBed(r*Room) error {
+	if r == nil {
+		return errors.New("patient: room cannot be nil")
+	}
+	if p.state != AsleepInHallway{
+		return fmt.Errorf("patient %s is not asleep in a hallway", p.ID())
+	}
+	p.room = r
+	p.state = AsleepInBed
+	return nil
+}
+
+//setDoctor (privado) asigna el medico a cargo. Lo usa Doctor DiagnosePatiet
+func (p*Patient) setDoctor (d*Doctor) {p.assignedDoctor = d}
 
