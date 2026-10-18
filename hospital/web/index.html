@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hospital de los Costeños</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1 id="hospital-name">Hospital de los Costeños</h1>
+      <p class="sub">Panel de control · se actualiza cada 2 segundos</p>
+    </div>
+    <div id="conn" class="conn" role="status">Conectando…</div>
+  </header>
+
+  <main>
+    <section class="stats" id="stats" aria-label="Resumen"></section>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>Salas</h2>
+        <div id="rooms" class="rooms"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Pacientes</h2>
+        <div id="patients" class="patients"></div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <h2>Consultas</h2>
+      <div id="queries" class="queries"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Historial de episodios</h2>
+      <div id="history" class="history"></div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="alert" hidden></div>
+
+  <dialog id="sleep-dialog">
+    <form method="dialog" id="sleep-form">
+      <h3>Ataque de sueño</h3>
+      <p id="sleep-who"></p>
+      <label for="sleep-location">¿Dónde se durmió?</label>
+      <input id="sleep-location" name="location" type="text" placeholder="cafetería, recepción, pasillo 2…" autocomplete="off" required>
+      <div class="actions">
+        <button type="button" id="sleep-cancel" class="btn ghost">Cancelar</button>
+        <button type="submit" class="btn primary">Registrar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+:root {
+  --bg: #f4f7f8;
+  --card: #ffffff;
+  --ink: #17262b;
+  --muted: #5b7078;
+  --line: #dbe4e7;
+  --teal: #0f766e;
+  --teal-soft: #d9f0ed;
+  --awake: #2f855a;
+  --awake-soft: #dff3e6;
+  --hall: #c2410c;
+  --hall-soft: #fde8d9;
+  --bed: #3558b8;
+  --bed-soft: #e0e8fb;
+  --danger: #b42318;
+  --shadow: 0 1px 2px rgba(23, 38, 43, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1a1d;
+    --card: #162428;
+    --ink: #e6eff1;
+    --muted: #94aab1;
+    --line: #28393e;
+    --teal: #2dd4bf;
+    --teal-soft: #134e48;
+    --awake: #6ee7a0;
+    --awake-soft: #15402a;
+    --hall: #fdba74;
+    --hall-soft: #4a2410;
+    --bed: #93b0f7;
+    --bed-soft: #1d2d5a;
+    --danger: #fda29b;
+    --shadow: none;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 20px 16px 8px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+h1 { margin: 0; font-size: 1.5rem; }
+.sub { margin: 2px 0 0; color: var(--muted); font-size: 0.875rem; }
+
+.conn {
+  font-size: 0.8125rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--line);
+  color: var(--muted);
+}
+.conn.ok { background: var(--awake-soft); color: var(--awake); }
+.conn.bad { background: var(--hall-soft); color: var(--hall); }
+.conn.mock { background: var(--bed-soft); color: var(--bed); }
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8px 16px 40px;
+  display: grid;
+  gap: 16px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+.stat {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow);
+}
+.stat b { display: block; font-size: 1.75rem; line-height: 1.1; }
+.stat span { color: var(--muted); font-size: 0.8125rem; }
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  gap: 16px;
+}
+@media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px 16px;
+  box-shadow: var(--shadow);
+}
+.panel h2 { margin: 0 0 10px; font-size: 1rem; }
+
+.rooms {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+.room {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  min-height: 74px;
+}
+.room.free { background: var(--awake-soft); border-color: transparent; }
+.room.busy { background: var(--bed-soft); border-color: transparent; }
+.room .rid { font-weight: 600; }
+.room .rstate { font-size: 0.8125rem; color: var(--muted); overflow-wrap: anywhere; }
+
+.patients { display: grid; gap: 10px; }
+.patient {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  align-items: center;
+}
+.patient .pname { font-weight: 600; }
+.patient .pmeta { grid-column: 1; font-size: 0.8125rem; color: var(--muted); overflow-wrap: anywhere; }
+.patient .pact { grid-column: 2; grid-row: 1 / span 2; }
+
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 999px;
+  margin-left: 6px;
+  vertical-align: 1px;
+}
+.badge.awake { background: var(--awake-soft); color: var(--awake); }
+.badge.hall { background: var(--hall-soft); color: var(--hall); }
+.badge.bed { background: var(--bed-soft); color: var(--bed); }
+.badge.lvl { background: var(--line); color: var(--muted); }
+.badge.lvl.severe { background: var(--hall-soft); color: var(--hall); }
+
+.btn {
+  font: inherit;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.btn:hover:not(:disabled) { border-color: var(--teal); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn.primary { background: var(--teal); border-color: var(--teal); color: #fff; }
+@media (prefers-color-scheme: dark) { .btn.primary { color: #06201d; } }
+.btn.ghost { background: transparent; }
+.btn:focus-visible, input:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+.queries {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+.qcard { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.qcard h3 { margin: 0 0 2px; font-size: 0.9375rem; }
+.qcard .qdesc { margin: 0 0 8px; font-size: 0.75rem; color: var(--muted); }
+.qcard ul { margin: 0; padding-left: 18px; }
+.qcard li { margin: 2px 0; overflow-wrap: anywhere; }
+.empty { color: var(--muted); font-style: italic; font-size: 0.875rem; }
+
+.history { display: grid; gap: 6px; }
+.episode {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 12px;
+  font-size: 0.875rem;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.episode:last-child { border-bottom: 0; }
+.episode time { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+dialog {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--ink);
+  padding: 18px;
+  width: min(380px, calc(100vw - 32px));
+}
+dialog::backdrop { background: rgba(0, 0, 0, 0.45); }
+dialog h3 { margin: 0 0 4px; }
+dialog p { margin: 0 0 12px; color: var(--muted); }
+dialog label { display: block; font-size: 0.8125rem; margin-bottom: 4px; }
+dialog input {
+  width: 100%;
+  font: inherit;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+}
+dialog .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  max-width: min(520px, calc(100vw - 32px));
+  background: var(--ink);
+  color: var(--bg);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+}
+.toast.error { background: var(--danger); color: #fff; }
+@media (prefers-color-scheme: dark) { .toast.error { color: #3a0a06; } }
