@@ -246,7 +246,6 @@ func (h *Hospital) HandleSleepAttack(p *Patient, location string) error {
 	}
 	h.mu.Lock()
 	defer h.mu.Unlock()
-	
 
 	// Un paciente que ya está dormido (en cama o en el pasillo) no puede
 	// tener otro ataque. Sin esta guarda, si alguien pulsa dos veces
