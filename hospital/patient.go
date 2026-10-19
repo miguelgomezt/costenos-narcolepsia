@@ -4,16 +4,17 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"sync"
+
 )
 
 /**
-NarcolepsyaLevel es la gravedad de la narcolepsia de un paciente. 
-Es un tipo propio con constante (no strings sueltos sueltos) para que el compilador 
+NarcolepsyaLevel es la gravedad de la narcolepsia de un paciente.
+Es un tipo propio con constante (no strings sueltos sueltos) para que el compilador
 atrape los errores de escritura
 **/
 
 type NarcolepsyLevel int 
-
 const (
 	Mild NarcolepsyLevel = iota
 	Moderate
@@ -62,6 +63,7 @@ Patient es una persona con narcolepsia atendida por el hospital.
 type Patient struct{
 	Person
 	level NarcolepsyLevel
+	mu    sync.RWMutex
 	state PatientState
 	currentLocation string
 	assignedDoctor *Doctor
@@ -93,6 +95,8 @@ cama no vuelve al pasillo por error.
 */
 
 func (p*Patient) SufferSleepAttack(location string){
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	if p.state != Awake {
 		return
 	}
@@ -110,6 +114,8 @@ llamar a WakeUp.
 **/
 
 func (p*Patient) WakeUp() error{
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	if p.state == Awake {
 		return fmt.Errorf("patient %s is already awake", p.ID())
 	}
@@ -119,19 +125,43 @@ func (p*Patient) WakeUp() error{
 }
 
 //State devuelve el estado actual del paciente. 
-func(p*Patient) State() PatientState {return p.state}
+func(p*Patient) State() PatientState {
+	p.mu.RLock()
+	defer p.mu.RUnlock( )
+	return p.state
+}
 
 //Level devuelve el nivel de Narcolepsia.
-func(p*Patient) Level() NarcolepsyLevel {return p.level}
+func(p*Patient) Level() NarcolepsyLevel {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	return p.level
+}
+
+
 
 //Location devuelve el lugar donde esta o donde se durmio el paciente.
-func (p*Patient) Location() string {return p.currentLocation}
+func (p*Patient) Location() string {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	return p.currentLocation
+}
+
+
 
 //Room devuelve la sala asignada, o nil si no se tiene sala. 
-func (p*Patient) Room() *Room {return p.room}
+func (p*Patient) Room() *Room {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	return p.room
+}
 
 //AssignedDoctor devuelve el doctor a cargo, o nil si no se tiene doctor. 
-func (p*Patient) AssignedDoctor() *Doctor {return p.assignedDoctor}
+func (p*Patient) AssignedDoctor() *Doctor {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	return p.assignedDoctor
+}
 
 
 /**
@@ -141,6 +171,8 @@ func (p*Patient) placeInBed(r*Room) error {
 	if r == nil {
 		return errors.New("patient: room cannot be nil")
 	}
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	if p.state != AsleepInHallway{
 		return fmt.Errorf("patient %s is not asleep in a hallway", p.ID())
 	}
@@ -150,5 +182,24 @@ func (p*Patient) placeInBed(r*Room) error {
 }
 
 //setDoctor (privado) asigna el medico a cargo. Lo usa Doctor DiagnosePatiet
-func (p*Patient) setDoctor (d*Doctor) {p.assignedDoctor = d}
+func (p*Patient) setDoctor (d*Doctor) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.assignedDoctor = d
+}
+
+/*
+claimDoctor (privado) asignado el médico solo si el paciente no tiene uno. 
+Comprobar y asignar ocurren dentro del mismo lock: así dos médicos que llegan a la vez no
+pueden quedarse los dos con el mismo paciente. 
+*/
+func (p*Patient) claimDoctor (d*Doctor) error{
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if p.assignedDoctor != nil{
+		return fmt.Errorf("patient %s already has doctor %s", p.ID(), p.assignedDoctor.Name())
+	}
+	p.assignedDoctor = d
+	return nil
+}
 
