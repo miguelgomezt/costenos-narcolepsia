@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"costenos-narcolepsia/hospital"
-	"costenos-narcolepsia/hospital/api"
+	"costenos-narcolepsia/api"
 )
 
 // demo agrupa lo que devuelve buildHospital. main necesita los médicos y

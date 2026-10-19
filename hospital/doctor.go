@@ -16,12 +16,12 @@ dos de los tres metodos de la interfaz de Attender.
 type Doctor struct {
 	Person
 	specialty string
-	mu		sync.RWMutex
+	mu        sync.RWMutex
 	patients  []*Patient
 	episodes  []EpisodeRecord
 }
 
-//New doctor valida los datos y crea un médico sin pacientes ni episiodos.
+// New doctor valida los datos y crea un médico sin pacientes ni episiodos.
 func NewDoctor(id, name string, age int, specialty string) (*Doctor, error) {
 	person, err := newPerson(id, name, age)
 	if err != nil {
@@ -33,10 +33,10 @@ func NewDoctor(id, name string, age int, specialty string) (*Doctor, error) {
 	return &Doctor{Person: person, specialty: specialty}, nil
 }
 
-//Specialty devuelve la especialidad del medico
+// Specialty devuelve la especialidad del medico
 func (d *Doctor) Specialty() string { return d.specialty }
 
-//Patients devuelve la copia de la lista de pacientes a cargo del medico
+// Patients devuelve la copia de la lista de pacientes a cargo del medico
 func (d *Doctor) Patients() []*Patient {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -77,7 +77,7 @@ func (d *Doctor) AttendSleepEmergency(p *Patient) error {
 	}
 	if p.AssignedDoctor() == nil {
 		//Si otro médico se adelanta justo ahora, claimDoctor falla y es correcto:
-		// el paciente ya tiene médico y la emergencia se atiende igual. 
+		// el paciente ya tiene médico y la emergencia se atiende igual.
 		_ = d.DiagnosePatient(p)
 	}
 	return nil
