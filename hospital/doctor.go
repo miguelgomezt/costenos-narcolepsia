@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -15,6 +16,7 @@ dos de los tres metodos de la interfaz de Attender.
 type Doctor struct {
 	Person
 	specialty string
+	mu		sync.RWMutex
 	patients  []*Patient
 	episodes  []EpisodeRecord
 }
@@ -36,6 +38,8 @@ func (d *Doctor) Specialty() string { return d.specialty }
 
 //Patients devuelve la copia de la lista de pacientes a cargo del medico
 func (d *Doctor) Patients() []*Patient {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 	out := make([]*Patient, len(d.patients))
 	copy(out, d.patients)
 	return out
@@ -50,11 +54,12 @@ func (d *Doctor) DiagnosePatient(p *Patient) error {
 	if p == nil {
 		return errors.New("doctor: patient cannot be nil")
 	}
-	if current := p.AssignedDoctor(); current != nil {
-		return fmt.Errorf("patient %s already has doctor %s", p.ID(), current.Name())
+	if err := p.claimDoctor(d); err != nil {
+		return err
 	}
+	d.mu.Lock()
 	d.patients = append(d.patients, p)
-	p.setDoctor(d)
+	d.mu.Unlock()
 	return nil
 }
 
@@ -71,7 +76,9 @@ func (d *Doctor) AttendSleepEmergency(p *Patient) error {
 		return fmt.Errorf("patient %s is not asleep", p.ID())
 	}
 	if p.AssignedDoctor() == nil {
-		return d.DiagnosePatient(p)
+		//Si otro médico se adelanta justo ahora, claimDoctor falla y es correcto:
+		// el paciente ya tiene médico y la emergencia se atiende igual. 
+		_ = d.DiagnosePatient(p)
 	}
 	return nil
 }
@@ -87,6 +94,9 @@ func (d *Doctor) Attend(p *Patient, location string) (EpisodeRecord, error) {
 	if strings.TrimSpace(location) == "" {
 		location = p.Location()
 	}
+	//Numerara y agregar episodio es una sola operación: va dentro del lock
+	d.mu.Lock()
+	defer d.mu.Unlock()
 	id := fmt.Sprintf("EP-%s-%d", d.ID(), len(d.episodes)+1)
 	record := NewEpisodeRecord(id, time.Now(), p, d, location, p.Room())
 	d.episodes = append(d.episodes, record)
@@ -98,6 +108,8 @@ MyEpisodes devuelve los episodios en lo que intervino este médico.
 Devuelve una copia para quien la reciba no puede modificar la lista interna.
 */
 func (d *Doctor) MyEpisodes() []EpisodeRecord {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 	out := make([]EpisodeRecord, len(d.episodes))
 	copy(out, d.episodes)
 	return out
